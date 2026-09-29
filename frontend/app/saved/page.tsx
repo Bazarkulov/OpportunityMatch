@@ -1,0 +1,7 @@
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Nav from "@/components/Nav";
+import { api, Opportunity, requireAuth } from "@/lib/api";
+export default function Saved(){const router=useRouter();const [items,setItems]=useState<Opportunity[]>([]);useEffect(()=>{requireAuth(router);api<Opportunity[]>("/api/saved").then(setItems).catch(()=>{})},[router]);async function remove(id:string){await api(`/api/saved/${id}`,{method:"DELETE"});setItems(items.filter(x=>x.id!==id))}return <><Nav/><main className="page"><div className="pageTitle"><span className="eyebrow">Your shortlist</span><h1>Saved opportunities.</h1></div>{!items.length&&<div className="empty"><h2>Your shortlist is empty</h2><Link className="button" href="/feed">Explore recommendations</Link></div>}<section className="cards">{items.map(o=><article className="card" key={o.id}><span className="eyebrow">{o.opportunity_type||"Opportunity"}</span><h2><Link href={`/opportunities/${o.id}`}>{o.title}</Link></h2><p className="organization">{o.organization}</p><div className="meta"><span>{o.location||"Location not published"}</span><span>{o.deadline||"Deadline not published"}</span></div><div className="actions"><Link className="button secondary" href={`/opportunities/${o.id}`}>View details</Link><button onClick={()=>remove(o.id)}>Remove</button></div></article>)}</section></main></>}
