@@ -1,4 +1,35 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-export default function Nav(){ const router=useRouter(); return <header><Link className="brand" href="/feed">OpportunityMatch</Link><nav><Link href="/feed">Discover</Link><Link href="/saved">Saved</Link><Link href="/profile">Profile</Link><button className="linkButton" onClick={()=>{localStorage.removeItem("token");router.push("/login")}}>Log out</button></nav></header> }
+import { usePathname, useRouter } from "next/navigation";
+
+export default function Nav() {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  function logout() {
+    localStorage.removeItem("token");
+    router.push("/login");
+  }
+
+  const navItems = [
+    { href: "/feed", label: "Discover" },
+    { href: "/saved", label: "Saved" },
+    { href: "/profile", label: "Profile" },
+  ];
+
+  return (
+    <header>
+      <Link className="brand" href="/feed">OpportunityMatch</Link>
+      <nav>
+        {navItems.map(({ href, label }) => (
+          <Link key={href} href={href} className={pathname === href ? "active" : ""}>
+            {label}
+          </Link>
+        ))}
+        <button className="linkButton" type="button" onClick={logout}>
+          Log out
+        </button>
+      </nav>
+    </header>
+  );
+}
